@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>Lois lab 1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div id='main-container' class='container col'>
+            <h2>Проверка формулы</h2>
+            <div>
+                <div class='text-message' id='result_message'>
+                </div>
+            </div>
+            <input class='input' id='input_value' type='text' class='' placeholder='Введите формулу'/>
+            <button class='button' id='calculate_button'>Проверить</button>
+        </div>
+        <div id="test-container" class="container col">
+            <h2>Тестированиие</h2>
+            <div id="test-result"></div>
+            <button id="next-test">next test</button>
+            <div>
+                <div id="test-formula"></div>
+                <button id="yes-test">yes</button>
+                <button id="no-test">no</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src='build/app.js'></script>
+</html>

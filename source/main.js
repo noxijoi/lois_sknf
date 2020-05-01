@@ -26,50 +26,9 @@ calculateButton.onclick = function () {
     let sourceCode = inputContainer.value;
     try {
         let statement = new LogicStatement(sourceCode);
-//        let a = statement.isFormula();
         console.log(statement);
         let isSKNF = statement.isSKNF();
-         if (isSKNF) {/*let logicEntities = this.logicEntities[0].childrenLogicEntities;
-        if (!logicEntities || logicEntities.length < 1) {
-            return false;
-        }
-        */
-        /*if (!this.isOnlySelectedTypes(logicEntities, LogicEntity.TYPE.BINARY_COMPLEX_FORMULA, Sign.TYPE.CONJUNCTION.name)) {
-            return false;
-        }*/
-       /* console.log("types are right");
-        let formulas = this.getAllSelectedLogicEntities(logicEntities, LogicEntity.TYPE.BINARY_COMPLEX_FORMULA)
-
-        if (!this.isCorrectDisjunctions(formulas)) {
-            return false;
-        }
-        console.log("disjunctions are right");
-        let binaryFormulas = this.isContainsBinaryComplexFormulas(formulas);
-
-        if (binaryFormulas || binaryFormulas.length > 0) {
-            if (this.containsAllVariables(binaryFormulas)) {
-                console.log("c1");
-                if (this.isHaveSameLogicEntities(binaryFormulas)) {
-                    console.log("c2");
-                    if (this.isHaveSameLogicEntities(formulas)) {
-                        console.log("c3");
-                        return false;
-                    }
-                }
-            } else {
-                return false;
-            }
-        }
-
-        if (!this.containsAllVariables(formulas)) {
-            return false;
-        }
-        console.log("c4");
-        if (this.isHaveSameLogicEntities(formulas)) {
-            return false;
-        }
-        console.log("c5");
-        return true;*/
+         if (isSKNF) {
             messageContainer.classList.add(successClass);
             messageContainer.innerText = 'Данная формула является СКНФ\n';
         } else {

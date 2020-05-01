@@ -184,44 +184,6 @@ export default class LogicStatement {
         return variables;
     }
 
-    setVariablesValues(variablesValues) {
-        if (this.variables) {
-            if (this.variables.length === variablesValues.length) {
-                this.variables.forEach(function (variable, index) {
-                    let value = variablesValues[index];
-                    let isAcceptableValue = typeof value === 'number' && value >= 0 && value <= 1 && Number.isInteger(value);
-                    if (isAcceptableValue) {
-                        variable.setValue(variablesValues[index]);
-                    } else throw new LogicStatementException(`Value ${value} is not valid`);
-                });
-            } else throw new LogicStatementException('Variables and variables values should be the same length');
-        }
-    }
-
-    generateAllPassableValues() {
-        let allPassableValues = [];
-        let variablesLength = this.variables.length;
-        let i = 0;
-        let byteLength = 1;
-
-        while (byteLength <= variablesLength) {
-            let values = (Number(i)).toString(2).split('');
-            byteLength = values.length;
-            for (let j = 0; j < byteLength; j++) {
-                values[j] = Number.parseInt(values[j]);
-            }
-            allPassableValues.push(values);
-            i++;
-        }
-        allPassableValues.pop();
-        allPassableValues.forEach(function (values) {
-            while (values.length < variablesLength) {
-                values.unshift(0);
-            }
-        });
-
-        return allPassableValues;
-    }
 
     isFormula() {
         if (this.logicEntities.length === 1) {
@@ -232,25 +194,6 @@ export default class LogicStatement {
                 logicEntity.type === LogicEntity.TYPE.UNARY_COMPLEX_FORMULA ||
                 logicEntity.type === LogicEntity.TYPE.BINARY_COMPLEX_FORMULA
         }
-    }
-
-    isGeneralFormula() {
-        if (this.isFormula()) {
-            let allPassableValues = this.generateAllPassableValues();
-            let self = this;
-
-            if (allPassableValues.length > 0) {
-                return (allPassableValues || []).every(function (values) {
-                    self.setVariablesValues(values);
-
-                    return self.getValue() === 1;
-                });
-            }
-
-            return self.getValue() === 1;
-        }
-
-        return false;
     }
 
     getValue() {
@@ -279,74 +222,5 @@ export default class LogicStatement {
     }
 
 
-    getAllSelectedLogicEntities(logicEntities, typeOfLogicEntity) {
-        let formulas = [];
-        for (let i = 0; i < logicEntities.length; i++) {
-            if (logicEntities[i].type === typeOfLogicEntity) {
-                formulas.push(logicEntities[i]);
-            }
-        }
-        return formulas;
-    }
-
-    isHaveSameLogicEntities(logicEntities) {
-        if (!logicEntities || logicEntities.length < 1) {
-            return false;
-        }
-        for (let i = 0; i < logicEntities.length - 1; i++) {
-            if (logicEntities[i].equals(logicEntities[i + 1])) {
-                return true;
-            }
-        }
-    }
-
-    containsAllVariables(logicEntities) {
-        console.log(logicEntities);
-        if (!logicEntities || logicEntities.length < 1) {
-            return false;
-        }
-        let variableArrays = this.getArraysWithVariables(logicEntities);
-        return this.isContainSameVariableNames(variableArrays);
-    }
-
-    getArraysWithVariables(logicEntities) {
-        let result = [];
-        for (let i = 0; i < logicEntities.length; i++) {
-            let variableLogicEntities = this.getOnlyVariables(logicEntities[i].childrenLogicEntities);
-            console.log(variableLogicEntities);
-            let variableSigns = [];
-            for (let j = 0; j < variableLogicEntities.length; j++) {
-                variableSigns.push(variableLogicEntities[j].signs[0].sourceCode)
-            }
-            result.push(variableSigns);
-
-        }
-        return result;
-    }
-
-    isContainSameVariableNames(array) {
-        console.log(array);
-        for (let i = 0; i < array.length - 1; i++) {
-
-            for (let j = 0; j < array[i].length; j++) {
-                if (!array[i + 1].includes((array[i])[j])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    getOnlyVariables(logicEntities) {
-        let result = [];
-        for (let i = 0; i < logicEntities.length; i++) {
-            if (logicEntities[i].type === LogicEntity.TYPE.UNARY_COMPLEX_FORMULA) {
-                result.push(...(this.getAllSelectedLogicEntities(logicEntities[i].childrenLogicEntities, LogicEntity.TYPE.VARIABLE)));
-            } else if (logicEntities[i].type === LogicEntity.TYPE.VARIABLE) {
-                result.push(logicEntities[i]);
-            }
-        }
-        return result;
-    }
 
 }

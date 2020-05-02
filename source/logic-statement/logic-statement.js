@@ -52,11 +52,12 @@ function getAtoms(formula, atoms = {}) {
 }
 
 function compareAtoms(a1, a2) {
+    let res = false;
     for (let key in a1) {
         if (!a2.hasOwnProperty(key)) return false;
-        if (a1[key] !== a2[key]) return true;
+        if (a1[key] !== a2[key]) res = true;
     }
-    return false
+    return res;
 
 }
 

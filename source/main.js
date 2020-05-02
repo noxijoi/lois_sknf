@@ -27,12 +27,12 @@ calculateButton.onclick = function () {
     try {
         let statement = new LogicStatement(sourceCode);
         console.log(statement);
-        let isSKNF = statement.isSKNF();
-         if (isSKNF) {
+        let isSDNF = statement.isSDNF();
+         if (isSDNF) {
             messageContainer.classList.add(successClass);
-            messageContainer.innerText = 'Данная формула является СКНФ\n';
+            messageContainer.innerText = 'Данная формула является СДНФ\n';
         } else {
-            messageContainer.innerText = 'Данная формула НЕ является СКНФ\n';
+            messageContainer.innerText = 'Данная формула НЕ является СДНФ\n';
         }
     } catch (e) {
         messageContainer.classList.add(errorClass);
@@ -45,7 +45,7 @@ nextTestButton.onclick = function (){
   let formulaContainer = document.getElementById('test-formula');
   console.log(randomFormula);
   formulaContainer.innerText = randomFormula.value;
-  formulaContainer.value = randomFormula.isSKNF;
+  formulaContainer.value = randomFormula.isSDNF;
     testMessage.innerText ='';
 
 };

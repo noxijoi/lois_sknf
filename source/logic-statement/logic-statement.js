@@ -6,13 +6,13 @@ import ValidationMessage from 'source/logic-statement/parser/validator/validatio
 import Sign from 'source/logic-statement/parser/sign/sign';
 import * as _ from "lodash"
 
-function divideDisjunction(logicEntity, arr) {
+function divideConjunctions(logicEntity, arr) {
     if (logicEntity.type === LogicEntity.TYPE.BINARY_COMPLEX_FORMULA) {
         let children = logicEntity.childrenLogicEntities;
         if (children[1].type === LogicEntity.TYPE.BINARY_OPERATOR
-            && children[1].signs[0].type === Sign.TYPE.CONJUNCTION.name) {
-            divideDisjunction(children[0], arr);
-            divideDisjunction(children[2], arr);
+            && children[1].signs[0].type === Sign.TYPE.DISJUNCTION.name) {
+            divideConjunctions(children[0], arr);
+            divideConjunctions(children[2], arr);
         } else {
             arr.push(logicEntity);
             return arr;
@@ -35,7 +35,7 @@ function getAllVariables(logicEntity, arr = []) {
     return arr;
 }
 
-function checkDisjunctionsVariables(disjunctions) {
+function checkCVariablonjunctionsVariables(disjunctions) {
     let variables = [];
     disjunctions.forEach(formula => {
         let formulaVars = getAllVariables(formula);
@@ -51,15 +51,15 @@ function checkDisjunctionsVariables(disjunctions) {
     return match;
 }
 
-function checkOperationType(logicEntity, operationNames = [Sign.TYPE.CONJUNCTION.name]) {
+function checkOperationType(logicEntity, operationNames = [Sign.TYPE.DISJUNCTION.name]) {
     let correct = false;
     if (logicEntity.type === LogicEntity.TYPE.BINARY_COMPLEX_FORMULA) {
         let operator = logicEntity.childrenLogicEntities[1];
         let operatorType = operator.signs[0].type;
         if (_.includes(operationNames, operatorType)) {
             let newOperationNames = [];
-            if (operatorType === Sign.TYPE.CONJUNCTION.name) {
-                newOperationNames = [Sign.TYPE.CONJUNCTION.name, Sign.TYPE.DISJUNCTION.name];
+            if (operatorType === Sign.TYPE.DISJUNCTION.name) {
+                newOperationNames = [Sign.TYPE.DISJUNCTION.name, Sign.TYPE.CONJUNCTION.name];
                 logicEntity.childrenLogicEntities.forEach(logicEntity => correct = true && checkOperationType(logicEntity, newOperationNames));
             }
         } else {
@@ -71,13 +71,13 @@ function checkOperationType(logicEntity, operationNames = [Sign.TYPE.CONJUNCTION
 }
 
 
-function checkDisjunction(logicEntity) {
+function checkConjunctions(logicEntity) {
     let correct = true;
     if (logicEntity.type === LogicEntity.TYPE.BINARY_COMPLEX_FORMULA) {
         let operator = logicEntity.childrenLogicEntities[1];
         let operatorType = operator.signs[0].type;
-        if (operatorType === Sign.TYPE.DISJUNCTION.name) {
-            logicEntity.childrenLogicEntities.forEach(logicEntity => correct = correct && checkDisjunction(logicEntity));
+        if (operatorType === Sign.TYPE.CONJUNCTION.name) {
+            logicEntity.childrenLogicEntities.forEach(logicEntity => correct = correct && checkConjunctions(logicEntity));
 
         } else {
             return false;
@@ -204,20 +204,20 @@ export default class LogicStatement {
         return null;
     }
 
-    isSKNF() {
+    isSDNF() {
         if (!checkOperationType(this.logicEntities[0])) {
             return false;
         }
-        let disjunctions = divideDisjunction(this.logicEntities[0], []);
-        for (let i = 0; i < disjunctions.length; i++) {
-            if(!checkDisjunction(disjunctions[i])){
+        let conjunctions = divideConjunctions(this.logicEntities[0], []);
+        for (let i = 0; i < conjunctions.length; i++) {
+            if(!checkConjunctions(conjunctions[i])){
                 return false;
             }
         }
-        if (!checkDisjunctionsVariables(disjunctions)) {
+        if (!checkCVariablonjunctionsVariables(conjunctions)) {
             return false;
         }
-        console.log(disjunctions);
+        console.log(conjunctions);
         return true;
     }
 

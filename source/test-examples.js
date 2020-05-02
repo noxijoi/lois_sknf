@@ -1,6 +1,6 @@
 export const tests = [
     {
-        value:'((A?B)|((!A)&B))',
+        value:'((A&B)|((!A)&B))',
         isSDNF: true
     },
     {
@@ -9,6 +9,6 @@ export const tests = [
     },
     {
         value:'((((A&B)&C)|(((!A)&B)&C))|((A&B)&(!C)))',
-        isSDNF: false
+        isSDNF: true
     }
 ];

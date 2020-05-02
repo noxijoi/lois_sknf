@@ -4,7 +4,7 @@
   "description": "lab1 for lois",
   "scripts": {
     "start" : "npm run watch",
-    "heroku-postbuild": "webpack -p",
+    "heroku-postbuild": "webpack --watch",
     "watch": "webpack --watch"
   },
   "dependencies": {

@@ -35,20 +35,57 @@ function getAllVariables(logicEntity, arr = []) {
     return arr;
 }
 
-function checkCVariablonjunctionsVariables(disjunctions) {
+function getAtoms(formula, atoms = {}) {
+    switch (formula.type) {
+        case LogicEntity.TYPE.BINARY_COMPLEX_FORMULA:
+        case LogicEntity.TYPE.FORMULA:
+            formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, atoms));
+            break;
+        case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA:
+            atoms[formula.childrenLogicEntities[1].signs[0].sourceCode] = false;
+            return atoms;
+        case LogicEntity.TYPE.VARIABLE:
+            atoms[formula.signs[0].sourceCode] = true;
+            return atoms;
+    }
+    return atoms;
+}
+
+function compareAtoms(a1, a2) {
+    for (let key in a1) {
+        if (!a2.hasOwnProperty(key)) return false;
+        if (a1[key] !== a2[key]) return true;
+    }
+    return false
+
+}
+
+function checkConjunctionsVariables(disjunctions) {
     let variables = [];
     disjunctions.forEach(formula => {
         let formulaVars = getAllVariables(formula);
         variables.push(formulaVars);
     });
+    let disjunctionsAtoms = [];
+    disjunctions.forEach(formula => {
+        let formulaAtoms = getAtoms(formula);
+        disjunctionsAtoms.push(formulaAtoms)
+    });
     let match = true;
-    for (let i = 0; i < variables.length - 1; i++) {
-        for (let j = 1; j < variables.length; j++) {
-            match = match && (_.xor(variables[i], variables[j]).length === 0);
-            match = match && (variables[i].length == variables[j].length);
+    for (let i = 0; i < disjunctionsAtoms.length - 1; i++) {
+        for (let j = 1; j < disjunctionsAtoms.length; j++) {
+            if (!compareAtoms(disjunctionsAtoms[i], disjunctionsAtoms[j])) {
+                match =  false;
+            }
         }
     }
-    return match;
+    for (let i = 0; i < variables.length - 1; i++) {
+        let uniq = _.uniq(variables[i]);
+        if(uniq.length !== variables[i].length){
+            match = false;
+        }
+     }
+     return match;
 }
 
 function checkOperationType(logicEntity, operationNames = [Sign.TYPE.DISJUNCTION.name]) {
@@ -60,7 +97,7 @@ function checkOperationType(logicEntity, operationNames = [Sign.TYPE.DISJUNCTION
             let newOperationNames = [];
             if (operatorType === Sign.TYPE.DISJUNCTION.name) {
                 newOperationNames = [Sign.TYPE.DISJUNCTION.name, Sign.TYPE.CONJUNCTION.name];
-                logicEntity.childrenLogicEntities.forEach(logicEntity => correct = true && checkOperationType(logicEntity, newOperationNames));
+                logicEntity.childrenLogicEntities.forEach(logicEntity => correct &= checkOperationType(logicEntity, newOperationNames));
             }
         } else {
             return false;
@@ -77,7 +114,7 @@ function checkConjunctions(logicEntity) {
         let operator = logicEntity.childrenLogicEntities[1];
         let operatorType = operator.signs[0].type;
         if (operatorType === Sign.TYPE.CONJUNCTION.name) {
-            logicEntity.childrenLogicEntities.forEach(logicEntity => correct = correct && checkConjunctions(logicEntity));
+            logicEntity.childrenLogicEntities.forEach(logicEntity => correct &= checkConjunctions(logicEntity));
 
         } else {
             return false;
@@ -85,6 +122,7 @@ function checkConjunctions(logicEntity) {
     }
     return correct;
 }
+
 
 export default class LogicStatement {
     constructor(sourceCode) {
@@ -205,22 +243,22 @@ export default class LogicStatement {
     }
 
     isSDNF() {
+        if (checkConjunctions(this.logicEntities[0])) {
+            return true;
+        }
         if (!checkOperationType(this.logicEntities[0])) {
             return false;
         }
         let conjunctions = divideConjunctions(this.logicEntities[0], []);
         for (let i = 0; i < conjunctions.length; i++) {
-            if(!checkConjunctions(conjunctions[i])){
+            if (!checkConjunctions(conjunctions[i])) {
                 return false;
             }
         }
-        if (!checkCVariablonjunctionsVariables(conjunctions)) {
+        if (!checkConjunctionsVariables(conjunctions)) {
             return false;
         }
         console.log(conjunctions);
         return true;
     }
-
-
-
 }

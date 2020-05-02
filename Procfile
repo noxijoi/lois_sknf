@@ -1,2 +1,2 @@
 web: npm install
-web: npm run
+web: npm run watch

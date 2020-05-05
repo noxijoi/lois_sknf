@@ -17,6 +17,10 @@ function divideConjunctions(logicEntity, arr) {
             arr.push(logicEntity);
             return arr;
         }
+    } else if (logicEntity.type === LogicEntity.TYPE.UNARY_COMPLEX_FORMULA ||
+        logicEntity.type === LogicEntity.TYPE.VARIABLE) {
+        arr.push(logicEntity);
+        return arr;
     }
     return arr;
 }
@@ -58,7 +62,6 @@ function compareAtoms(a1, a2) {
         if (a1[key] !== a2[key]) res = true;
     }
     return res;
-
 }
 
 function checkConjunctionsVariables(disjunctions) {
@@ -76,17 +79,17 @@ function checkConjunctionsVariables(disjunctions) {
     for (let i = 0; i < disjunctionsAtoms.length - 1; i++) {
         for (let j = 1; j < disjunctionsAtoms.length; j++) {
             if (!compareAtoms(disjunctionsAtoms[i], disjunctionsAtoms[j])) {
-                match =  false;
+                match = false;
             }
         }
     }
-    for (let i = 0; i < variables.length - 1; i++) {
+    for (let i = 0; i < variables.length; i++) {
         let uniq = _.uniq(variables[i]);
-        if(uniq.length !== variables[i].length){
+        if (uniq.length !== variables[i].length) {
             match = false;
         }
-     }
-     return match;
+    }
+    return match;
 }
 
 function checkOperationType(logicEntity, operationNames = [Sign.TYPE.DISJUNCTION.name]) {
@@ -116,7 +119,6 @@ function checkConjunctions(logicEntity) {
         let operatorType = operator.signs[0].type;
         if (operatorType === Sign.TYPE.CONJUNCTION.name) {
             logicEntity.childrenLogicEntities.forEach(logicEntity => correct &= checkConjunctions(logicEntity));
-
         } else {
             return false;
         }
@@ -244,13 +246,15 @@ export default class LogicStatement {
     }
 
     isSDNF() {
+        let conjunctions = [];
         if (checkConjunctions(this.logicEntities[0])) {
-            return true;
+            conjunctions.push(this.logicEntities[0]);
+            return checkConjunctionsVariables(conjunctions);
         }
         if (!checkOperationType(this.logicEntities[0])) {
             return false;
         }
-        let conjunctions = divideConjunctions(this.logicEntities[0], []);
+        conjunctions = divideConjunctions(this.logicEntities[0], []);
         for (let i = 0; i < conjunctions.length; i++) {
             if (!checkConjunctions(conjunctions[i])) {
                 return false;

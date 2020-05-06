@@ -45,9 +45,14 @@ function getAtoms(formula, atoms = {}) {
         case LogicEntity.TYPE.FORMULA:
             formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, atoms));
             break;
-        case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA:
-            atoms[formula.childrenLogicEntities[1].signs[0].sourceCode] = false;
+        case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA: {
+            let negAtoms = {};
+            formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, negAtoms));
+            for (let atom in negAtoms) {
+                atoms[atom] = false;
+            }
             return atoms;
+        }
         case LogicEntity.TYPE.VARIABLE:
             atoms[formula.signs[0].sourceCode] = true;
             return atoms;

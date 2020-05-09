@@ -46,11 +46,10 @@ function getAtoms(formula, atoms = {}) {
             formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, atoms));
             break;
         case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA: {
-            let negAtoms = {};
-            formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, negAtoms));
-            for (let atom in negAtoms) {
-                atoms[atom] = false;
+            if(formula.childrenLogicEntities[0].type !== LogicEntity.TYPE.VARIABLE){
+                throw  new LogicStatementException("Данная формула НЕ является СДНФ\n")
             }
+            atoms[formula.childrenLogicEntities[0].signs[0].sourceCode] = false;
             return atoms;
         }
         case LogicEntity.TYPE.VARIABLE:

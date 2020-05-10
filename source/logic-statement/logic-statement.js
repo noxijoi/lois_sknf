@@ -46,7 +46,7 @@ function getAtoms(formula, atoms = {}) {
             formula.childrenLogicEntities.forEach(logicEntity => getAtoms(logicEntity, atoms));
             break;
         case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA: {
-            if(formula.childrenLogicEntities[0].type !== LogicEntity.TYPE.VARIABLE){
+            if(formula.childrenLogicEntities[1].type !== LogicEntity.TYPE.VARIABLE){
                 throw  new LogicStatementException("Данная формула НЕ является СДНФ\n")
             }
             atoms[formula.childrenLogicEntities[0].signs[0].sourceCode] = false;

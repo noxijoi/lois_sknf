@@ -65,6 +65,10 @@ function compareAtoms(a1, a2) {
         if (!a2.hasOwnProperty(key)) return false;
         if (a1[key] !== a2[key]) res = true;
     }
+    for (let key in a2) {
+        if (!a1.hasOwnProperty(key)) return false;
+        if (a2[key] !== a1[key]) res = true;
+    }
     return res;
 }
 

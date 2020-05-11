@@ -49,7 +49,7 @@ function getAtoms(formula, atoms = {}) {
             if(formula.childrenLogicEntities[1].type !== LogicEntity.TYPE.VARIABLE){
                 throw  new LogicStatementException("Данная формула НЕ является СДНФ\n")
             }
-            atoms[formula.childrenLogicEntities[0].signs[0].sourceCode] = false;
+            atoms[formula.childrenLogicEntities[1].signs[0].sourceCode] = false;
             return atoms;
         }
         case LogicEntity.TYPE.VARIABLE:

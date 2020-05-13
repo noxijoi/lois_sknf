@@ -18,7 +18,8 @@ function divideConjunctions(logicEntity, arr) {
             return arr;
         }
     } else if (logicEntity.type === LogicEntity.TYPE.UNARY_COMPLEX_FORMULA ||
-        logicEntity.type === LogicEntity.TYPE.VARIABLE) {
+        logicEntity.type === LogicEntity.TYPE.VARIABLE||
+        logicEntity.type === LogicEntity.TYPE.CONST) {
         arr.push(logicEntity);
         return arr;
     }
@@ -32,6 +33,8 @@ function getAllVariables(logicEntity, arr = []) {
         case LogicEntity.TYPE.UNARY_COMPLEX_FORMULA:
             logicEntity.childrenLogicEntities.forEach(logicEntity => getAllVariables(logicEntity, arr));
             break;
+        case LogicEntity.TYPE.CONST:
+            throw  new LogicStatementException("Данная формула НЕ является СДНФ\n");
         case LogicEntity.TYPE.VARIABLE:
             arr.push(logicEntity.signs[0].sourceCode);
             return arr;
